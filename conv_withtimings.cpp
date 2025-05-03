@@ -493,6 +493,7 @@ wait(clk.posedge_event());
   std::cout.rdbuf(cout_buf);
   log_file.close();
 
+	    //this is for test
     return 0;
 }
 
