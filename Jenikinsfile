@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+
+    environment {
+        GIT_REPO_URL = 'https://github.com/Deepika123-vandana/Vconv.git'
+        BRANCH = 'main'
+        BUILD_DIR = 'build'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "${BRANCH}", url: "${GIT_REPO_URL}"
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh '''
+                    mkdir -p ${BUILD_DIR}
+                    g++ -o ${BUILD_DIR}/conv_withtimings.cpp
