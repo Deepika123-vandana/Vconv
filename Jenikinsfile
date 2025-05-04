@@ -5,6 +5,7 @@ pipeline {
         GIT_REPO_URL = 'https://github.com/Deepika123-vandana/Vconv.git'
         BRANCH = 'main'
         BUILD_DIR = 'build'
+        SYSTEMC_HOME = '/path/to/systemc'  // set actual path here or ensure it's in system env
     }
 
     stages {
@@ -18,4 +19,17 @@ pipeline {
             steps {
                 sh '''
                     mkdir -p ${BUILD_DIR}
-                    g++ -o ${BUILD_DIR}/conv_withtimings.cpp
+                    g++ -I$SYSTEMC_HOME/include -L$SYSTEMC_HOME/lib -lsystemc conv_withtimings.cpp -o ${BUILD_DIR}/vconv.exe
+                '''
+            }
+        }
+
+        stage('Run') {
+            steps {
+                sh '''
+                    ./${BUILD_DIR}/vconv.exe
+                '''
+            }
+        }
+    }
+}
