@@ -5,7 +5,11 @@ pipeline {
         GIT_REPO_URL = 'https://github.com/Deepika123-vandana/Vconv.git'
         BRANCH = 'main'
         BUILD_DIR = 'build'
-        SYSTEMC_HOME = '/home/admin1/Pictures/systemc/install' // Correct path to the SystemC installation
+        SYSTEMC_HOME = '/home/admin1/Pictures/systemc/install' // Correct path to SystemC installation
+    }
+
+    triggers {
+        githubPush()  // Trigger pipeline on push events from GitHub
     }
 
     stages {
@@ -32,7 +36,7 @@ pipeline {
         stage('Run') {
             steps {
                 script {
-                    // Ensure libraries are linked before running
+                    // Ensure libraries are linked before running the executable
                     sh '''
                         export LD_LIBRARY_PATH=$SYSTEMC_HOME/lib:$LD_LIBRARY_PATH
                         ./${BUILD_DIR}/vconv.exe
