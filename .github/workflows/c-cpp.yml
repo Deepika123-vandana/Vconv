@@ -1,23 +1,39 @@
-name: C/C++ CI
+name: SystemC Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
+    branches: [main]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential git libtool m4 automake
+
+      - name: Clone and Build SystemC
+        run: |
+          git clone https://github.com/accellera-official/systemc.git
+          cd systemc
+          mkdir objdir
+          cd objdir
+          ../configure --prefix=$GITHUB_WORKSPACE/systemc-install
+          make -j$(nproc)
+          make install
+
+      - name: Build Your Program
+        run: |
+          g++ -I$GITHUB_WORKSPACE/systemc-install/include -L$GITHUB_WORKSPACE/systemc-install/lib -lsystemc conv_withtimings.cpp -o vconv.exe
+
+      - name: Run Simulation
+        run: |
+          export LD_LIBRARY_PATH=$GITHUB_WORKSPACE/systemc-install/lib
+          ./vconv.exe
