@@ -17,6 +17,18 @@ pipeline {
             }
         }
 
+        stage('Debug') {
+            steps {
+                sh '''
+                    echo "Checking environment variables..."
+                    echo "CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH"
+                    echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+                    echo "SystemC Include Path Exists: $(ls -l $CPLUS_INCLUDE_PATH)"
+                    echo "SystemC Library Path Exists: $(ls -l $LD_LIBRARY_PATH)"
+                '''
+            }
+        }
+
         stage('Build') {
             steps {
                 sh '''
