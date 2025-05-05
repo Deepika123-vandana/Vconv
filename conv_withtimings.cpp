@@ -343,7 +343,7 @@ sc_event mod1_done;
   }
 
   void run() {
-      std::ifstream hex_file0("/home/admin1/Pictures/systemc/examples/vconv/k_0.hex");
+      std::ifstream hex_file0("/home/admin1/Music/systemc/examples/vconv/k_0.hex");
     std::string line0;
     uint32_t data0;
      // 224x224 matrix
@@ -365,7 +365,7 @@ sc_event mod1_done;
 
     hex_file0.close();
     
-     std::ifstream hex_file("/home/admin1/Pictures/systemc/examples/vconv/l_0.hex");
+     std::ifstream hex_file("home/admin1/Music/systemc/examples/Vconv/l_0.hex");
     std::string line;
     uint32_t data;
  
