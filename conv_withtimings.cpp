@@ -483,7 +483,7 @@ wait(clk.posedge_event());
     
     
     int sc_main(int argc, char* argv[]) {
- std::ofstream log_file("/home/poojitha/SystemC/my_log.txt");
+ std::ofstream log_file("/home/admin1/Pictures/systemc/examples/vconv/my_log.txt");
   std::streambuf *cout_buf = std::cout.rdbuf();
   std::cout.rdbuf(log_file.rdbuf());
    //sc_trace_file* file = sc_create_vcd_trace_file("trace");
