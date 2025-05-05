@@ -496,4 +496,27 @@ wait(clk.posedge_event());
 	    //this is for test
     return 0;
 }
+sc_time MAX_SIM_TIME(10, SC_SEC);  // Set maximum simulation time to 10 seconds
 
+SC_MODULE(SimulationControl) {
+    SC_CTOR(SimulationControl) {
+        SC_THREAD(run_simulation); // Register the thread
+    }
+
+    void run_simulation() {
+        while (sc_time_stamp() < MAX_SIM_TIME) {
+            wait(1, SC_MS); // Wait for 1 millisecond
+        }
+        sc_stop(); // Stop the simulation after MAX_SIM_TIME
+    }
+};
+
+int sc_main(int argc, char* argv[]) {
+    // Instantiate the SimulationControl module
+    SimulationControl sim_control("SimControl");
+
+    // Other modules and simulation setup
+
+    sc_start();  // Start the simulation
+    return 0;
+}
