@@ -17,19 +17,19 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential git libtool m4 automake
+          sudo apt install -y build-essential cmake
 
       - name: Clone and Build SystemC
         run: |
           git clone https://github.com/accellera-official/systemc.git
           cd systemc
-          mkdir objdir
-          cd objdir
-          ../configure --prefix=$GITHUB_WORKSPACE/systemc-install
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/systemc-install
           make -j$(nproc)
           make install
 
-      - name: Build Your Program
+      - name: Build Your SystemC Program
         run: |
           g++ -I$GITHUB_WORKSPACE/systemc-install/include -L$GITHUB_WORKSPACE/systemc-install/lib -lsystemc conv_withtimings.cpp -o vconv.exe
 
