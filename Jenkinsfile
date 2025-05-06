@@ -35,26 +35,32 @@ pipeline {
         }
 
         stage('Run') {
-            steps {
-                script {
-                    sh '''
-                        export LD_LIBRARY_PATH=$SYSTEMC_HOME/lib:$LD_LIBRARY_PATH
-                        ./${BUILD_DIR}/vconv.exe
-                        
-                        # Ensure log.txt is generated in the correct directory
-                        if [ -f /home/admin1/Documents/systemc/log.txt ]; then
-                            mv /home/admin1/Documents/systemc/log.txt $LOG_DIR/log.txt
-                        else
-                            echo "log.txt not found"
-                        fi
+    steps {
+        script {
+            sh '''
+                export LD_LIBRARY_PATH=$SYSTEMC_HOME/lib:$LD_LIBRARY_PATH
+                ./${BUILD_DIR}/vconv.exe
+                
+                # Remove the old log.txt if it exists before moving the new one
+                if [ -f $LOG_DIR/log.txt ]; then
+                    rm -f $LOG_DIR/log.txt
+                fi
+                
+                # Ensure log.txt is generated in the correct directory
+                if [ -f /home/admin1/Documents/systemc/log.txt ]; then
+                    mv /home/admin1/Documents/systemc/log.txt $LOG_DIR/log.txt
+                else
+                    echo "log.txt not found"
+                fi
 
-                        # Verify log.txt has been moved to the Jenkins directory
-                        ls -l $LOG_DIR
-                        [ -f $LOG_DIR/log.txt ] && cat $LOG_DIR/log.txt || echo "log.txt not found"
-                    '''
-                }
-            }
+                # Verify log.txt has been moved to the Jenkins directory
+                ls -l $LOG_DIR
+                [ -f $LOG_DIR/log.txt ] && cat $LOG_DIR/log.txt || echo "log.txt not found"
+            '''
         }
+    }
+}
+
 
         
     }
