@@ -5,7 +5,7 @@ pipeline {
         GIT_REPO_URL = 'https://github.com/Deepika123-vandana/Vconv.git'
         BRANCH = 'main'
         BUILD_DIR = 'build'
-        SYSTEMC_HOME = '/home/admin1/Pictures/systemc/install' // Correct path to SystemC installation
+        SYSTEMC_HOME = '/home/admin1/Music/systemc/install' // Correct path to SystemC installation
     }
 
     triggers {
