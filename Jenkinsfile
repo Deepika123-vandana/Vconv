@@ -56,11 +56,7 @@ pipeline {
             }
         }
 
-        stage('Archive Log') {
-            steps {
-                archiveArtifacts artifacts: 'systemc/jenkins/log.txt', allowEmptyArchive: true
-            }
-        }
+        
     }
 
     post {
