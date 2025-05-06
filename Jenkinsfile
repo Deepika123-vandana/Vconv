@@ -9,7 +9,6 @@ pipeline {
         SYSTEMC_ROOT = '/home/admin1/Documents/systemc'  // Add SYSTEMC_ROOT for root folder
         LOG_DIR = '/home/admin1/Documents/systemc/jenkins' // Directory to move log.txt
     }
-no this one is working ..after this chnages again it is not working..just tell me it is overwrite or not
 
     triggers {
         githubPush()
