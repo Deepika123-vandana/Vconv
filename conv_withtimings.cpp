@@ -254,6 +254,7 @@ void conv() {
                 }
                 if (out_fifo.num_available() == (output_size * output_size)) {
                     std::cout << sc_time_stamp() << " entered final stage" << std::endl;
+                    sc_stop();
                     break;
                 }
             }
@@ -343,7 +344,7 @@ sc_event mod1_done;
   }
 
   void run() {
-      std::ifstream hex_file0("/home/admin1/Music/systemc/examples/vconv/k_0.hex");
+      std::ifstream hex_file0("/home/admin1/Music/systemc/examples/Vconv/k_0.hex");
     std::string line0;
     uint32_t data0;
      // 224x224 matrix
@@ -365,7 +366,7 @@ sc_event mod1_done;
 
     hex_file0.close();
     
-     std::ifstream hex_file("home/admin1/Music/systemc/examples/Vconv/l_0.hex");
+     std::ifstream hex_file("/home/admin1/Music/systemc/examples/Vconv/l_0.hex");
     std::string line;
     uint32_t data;
  
@@ -483,7 +484,7 @@ wait(clk.posedge_event());
     
     
     int sc_main(int argc, char* argv[]) {
- std::ofstream log_file("/home/admin1/Music/systemc/examples/vconv/my_log.txt");
+ std::ofstream log_file("/home/admin1/Music/systemc/log.txt");
   std::streambuf *cout_buf = std::cout.rdbuf();
   std::cout.rdbuf(log_file.rdbuf());
    //sc_trace_file* file = sc_create_vcd_trace_file("trace");
@@ -496,27 +497,3 @@ wait(clk.posedge_event());
 	    //this is for test
     return 0;
 }
-// sc_time MAX_SIM_TIME(10, SC_SEC);  // Set maximum simulation time to 10 seconds
-
-// SC_MODULE(SimulationControl) {
-//     SC_CTOR(SimulationControl) {
-//         SC_THREAD(run_simulation); // Register the thread
-//     }
-
-//     void run_simulation() {
-//         while (sc_time_stamp() < MAX_SIM_TIME) {
-//             wait(1, SC_MS); // Wait for 1 millisecond
-//         }
-//         sc_stop(); // Stop the simulation after MAX_SIM_TIME
-//     }
-// };
-
-// int sc_main(int argc, char* argv[]) {
-//     // Instantiate the SimulationControl module
-//     SimulationControl sim_control("SimControl");
-
-//     // Other modules and simulation setup
-
-//     sc_start();  // Start the simulation
-//     return 0;
-// }
