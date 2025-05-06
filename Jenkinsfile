@@ -6,6 +6,7 @@ pipeline {
         BRANCH = 'main'
         BUILD_DIR = 'build'
         SYSTEMC_HOME = '/home/admin1/Music/systemc/install'
+        SYSTEMC_ROOT = '/home/admin1/Music/systemc'  // Add SYSTEMC_ROOT for root folder
     }
 
     triggers {
@@ -39,7 +40,7 @@ pipeline {
                         export LD_LIBRARY_PATH=$SYSTEMC_HOME/lib:$LD_LIBRARY_PATH
                         ./${BUILD_DIR}/vconv.exe
                         ls -l
-                        [ -f log.txt ] && cat log.txt || echo "log.txt not found"
+                        [ -f $SYSTEMC_ROOT/log.txt ] && cat $SYSTEMC_ROOT/log.txt || echo "log.txt not found"
                     '''
                 }
             }
@@ -47,7 +48,10 @@ pipeline {
 
         stage('Archive Log') {
             steps {
-                archiveArtifacts artifacts: '**/log.txt', allowEmptyArchive: true
+                script {
+                    // Archive the log.txt file from the SYSTEMC_ROOT directory
+                    archiveArtifacts artifacts: "$SYSTEMC_ROOT/log.txt", allowEmptyArchive: true
+                }
             }
         }
     }
