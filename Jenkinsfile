@@ -39,8 +39,10 @@ pipeline {
                     sh '''
                         export LD_LIBRARY_PATH=$SYSTEMC_HOME/lib:$LD_LIBRARY_PATH
                         ./${BUILD_DIR}/vconv.exe
-                        ls -l
-                        [ -f $SYSTEMC_ROOT/log.txt ] && cat $SYSTEMC_ROOT/log.txt || echo "log.txt not found"
+                        # Ensure log.txt is generated in the subdirectory
+                        mv /home/admin1/Music/systemc/log.txt /home/admin1/Music/systemc/jenkins/log.txt
+                        ls -l /home/admin1/Music/systemc/jenkins/
+                        [ -f /home/admin1/Music/systemc/jenkins/log.txt ] && cat /home/admin1/Music/systemc/jenkins/log.txt || echo "log.txt not found"
                     '''
                 }
             }
@@ -48,10 +50,7 @@ pipeline {
 
         stage('Archive Log') {
             steps {
-                script {
-                    // Archive the log.txt file from the SYSTEMC_ROOT directory
-                    archiveArtifacts artifacts: "$SYSTEMC_ROOT/log.txt", allowEmptyArchive: true
-                }
+                archiveArtifacts artifacts: '/home/admin1/Music/systemc/jenkins/log.txt', allowEmptyArchive: true
             }
         }
     }
