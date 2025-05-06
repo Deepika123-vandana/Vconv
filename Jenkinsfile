@@ -6,7 +6,7 @@ pipeline {
         BRANCH = 'main'
         BUILD_DIR = 'build'
         SYSTEMC_HOME = '/home/admin1/Music/systemc/install'
-        SYSTEMC_ROOT = '/home/admin1/Music/systemc'  // Root folder for log.txt
+        SYSTEMC_ROOT = '/home/admin1/Music/systemc'  // Add SYSTEMC_ROOT for root folder
     }
 
     triggers {
@@ -46,20 +46,11 @@ pipeline {
             }
         }
 
-        stage('Copy Log to Workspace') {
-            steps {
-                script {
-                    // Ensure the log.txt file is copied to the Jenkins workspace
-                    sh 'cp $SYSTEMC_ROOT/log.txt $WORKSPACE/log.txt'
-                }
-            }
-        }
-
         stage('Archive Log') {
             steps {
                 script {
-                    // Now archive the log.txt file from the workspace
-                    archiveArtifacts artifacts: 'log.txt', allowEmptyArchive: true
+                    // Archive the log.txt file from the SYSTEMC_ROOT directory
+                    archiveArtifacts artifacts: "$SYSTEMC_ROOT/log.txt", allowEmptyArchive: true
                 }
             }
         }
