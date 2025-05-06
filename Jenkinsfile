@@ -43,20 +43,25 @@ pipeline {
                         
                         # Ensure log.txt is generated in the correct directory
                         if [ -f /home/admin1/Documents/systemc/log.txt ]; then
-                            mv /home/admin1/Documents/systemc/log.txt $LOG_DIR/log.txt
+                            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+                            mv /home/admin1/Documents/systemc/log.txt $LOG_DIR/log_${BUILD_NUMBER}_$TIMESTAMP.txt
                         else
                             echo "log.txt not found"
                         fi
 
-                        # Verify log.txt has been moved to the Jenkins directory
+                        # Verify the new log has been moved to the Jenkins directory
                         ls -l $LOG_DIR
-                        [ -f $LOG_DIR/log.txt ] && cat $LOG_DIR/log.txt || echo "log.txt not found"
+                        [ -f $LOG_DIR/log_${BUILD_NUMBER}_$TIMESTAMP.txt ] && cat $LOG_DIR/log_${BUILD_NUMBER}_$TIMESTAMP.txt || echo "log.txt not found"
                     '''
                 }
             }
         }
 
-        
+        stage('Archive Logs') {
+            steps {
+                archiveArtifacts artifacts: 'systemc/jenkins/log_*.txt', allowEmptyArchive: true
+            }
+        }
     }
 
     post {
