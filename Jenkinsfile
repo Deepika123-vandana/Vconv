@@ -39,16 +39,11 @@ pipeline {
                 script {
                     sh '''
                         export LD_LIBRARY_PATH=$SYSTEMC_HOME/lib:$LD_LIBRARY_PATH
-                        
-                        # Change to the SYSTEMC_ROOT directory where log.txt will be generated
-                        cd $SYSTEMC_ROOT
-
-                        # Run the executable
                         ./${BUILD_DIR}/vconv.exe
                         
                         # Ensure log.txt is generated in the correct directory
-                        if [ -f $SYSTEMC_ROOT/log.txt ]; then
-                            mv $SYSTEMC_ROOT/log.txt $LOG_DIR/log.txt
+                        if [ -f /home/admin1/Documents/systemc/log.txt ]; then
+                            mv /home/admin1/Documents/systemc/log.txt $LOG_DIR/log.txt
                         else
                             echo "log.txt not found"
                         fi
@@ -60,6 +55,8 @@ pipeline {
                 }
             }
         }
+
+        
     }
 
     post {
