@@ -344,7 +344,7 @@ sc_event mod1_done;
   }
 
   void run() {
-      std::ifstream hex_file0("/home/admin1/Music/systemc/examples/Vconv/k_0.hex");
+      std::ifstream hex_file0("/home/admin1/Documents/systemc/examples/Vconv/k_0.hex");
     std::string line0;
     uint32_t data0;
      // 224x224 matrix
@@ -366,7 +366,7 @@ sc_event mod1_done;
 
     hex_file0.close();
     
-     std::ifstream hex_file("/home/admin1/Music/systemc/examples/Vconv/l_0.hex");
+     std::ifstream hex_file("/home/admin1/Documents/systemc/examples/Vconv/l_0.hex");
     std::string line;
     uint32_t data;
  
@@ -484,7 +484,7 @@ wait(clk.posedge_event());
     
     
     int sc_main(int argc, char* argv[]) {
-  std::ofstream log_file("log.txt");
+ std::ofstream log_file("/home/admin1/Music/systemc/log.txt");
   std::streambuf *cout_buf = std::cout.rdbuf();
   std::cout.rdbuf(log_file.rdbuf());
    //sc_trace_file* file = sc_create_vcd_trace_file("trace");
