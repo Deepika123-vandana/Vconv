@@ -7,6 +7,7 @@ pipeline {
         BUILD_DIR = 'build'
         SYSTEMC_HOME = '/home/admin1/Music/systemc/install'
         SYSTEMC_ROOT = '/home/admin1/Music/systemc'  // Add SYSTEMC_ROOT for root folder
+        LOG_DIR = '/home/admin1/Music/systemc/jenkins' // Directory to move log.txt
     }
 
     triggers {
@@ -39,10 +40,17 @@ pipeline {
                     sh '''
                         export LD_LIBRARY_PATH=$SYSTEMC_HOME/lib:$LD_LIBRARY_PATH
                         ./${BUILD_DIR}/vconv.exe
-                        # Ensure log.txt is generated in the subdirectory
-                        mv /home/admin1/Music/systemc/log.txt /home/admin1/Music/systemc/jenkins/log.txt
-                        ls -l /home/admin1/Music/systemc/jenkins/
-                        [ -f /home/admin1/Music/systemc/jenkins/log.txt ] && cat /home/admin1/Music/systemc/jenkins/log.txt || echo "log.txt not found"
+                        
+                        # Ensure log.txt is generated in the correct directory
+                        if [ -f /home/admin1/Music/systemc/log.txt ]; then
+                            mv /home/admin1/Music/systemc/log.txt $LOG_DIR/log.txt
+                        else
+                            echo "log.txt not found"
+                        fi
+
+                        # Verify log.txt has been moved to the Jenkins directory
+                        ls -l $LOG_DIR
+                        [ -f $LOG_DIR/log.txt ] && cat $LOG_DIR/log.txt || echo "log.txt not found"
                     '''
                 }
             }
@@ -50,7 +58,7 @@ pipeline {
 
         stage('Archive Log') {
             steps {
-                archiveArtifacts artifacts: '/home/admin1/Music/systemc/jenkins/log.txt', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'systemc/jenkins/log.txt', allowEmptyArchive: true
             }
         }
     }
