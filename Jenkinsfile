@@ -5,11 +5,11 @@ pipeline {
         GIT_REPO_URL = 'https://github.com/Deepika123-vandana/Vconv.git'
         BRANCH = 'main'
         BUILD_DIR = 'build'
-        SYSTEMC_HOME = '/home/admin1/Music/systemc/install' // Correct path to SystemC installation
+        SYSTEMC_HOME = '/home/admin1/Music/systemc/install'
     }
 
     triggers {
-        githubPush()  // Trigger pipeline on push events from GitHub
+        githubPush()
     }
 
     stages {
@@ -22,7 +22,6 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Ensure the SystemC include and lib paths are properly exported
                     sh '''
                         export CPLUS_INCLUDE_PATH=$SYSTEMC_HOME/include:$CPLUS_INCLUDE_PATH
                         export LD_LIBRARY_PATH=$SYSTEMC_HOME/lib:$LD_LIBRARY_PATH
@@ -36,13 +35,37 @@ pipeline {
         stage('Run') {
             steps {
                 script {
-                    // Ensure libraries are linked before running the executable
                     sh '''
                         export LD_LIBRARY_PATH=$SYSTEMC_HOME/lib:$LD_LIBRARY_PATH
                         ./${BUILD_DIR}/vconv.exe
+                        ls -l
+                        [ -f log.txt ] && cat log.txt || echo "log.txt not found"
                     '''
                 }
             }
+        }
+
+        stage('Archive Log') {
+            steps {
+                archiveArtifacts artifacts: '**/log.txt', allowEmptyArchive: true
+            }
+        }
+    }
+
+    post {
+        failure {
+            emailext(
+                subject: "Jenkins Build Failed: ${env.JOB_NAME} [#${env.BUILD_NUMBER}]",
+                body: """
+                    Jenkins build failed.
+
+                    Job: ${env.JOB_NAME}
+                    Build: #${env.BUILD_NUMBER}
+                    Commit: ${env.GIT_COMMIT}
+                    View logs: ${env.BUILD_URL}console
+                """,
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+            )
         }
     }
 }
