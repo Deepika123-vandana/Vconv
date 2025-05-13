@@ -6,9 +6,8 @@ pipeline {
         BRANCH = 'main'
         BUILD_DIR = 'build'
         SYSTEMC_HOME = '/home/admin1/Documents/systemc/install'
-        SYSTEMC_ROOT = '/home/admin1/Documents/systemc'  // Add SYSTEMC_ROOT for root folder
-        LOG_DIR = '/home/admin1/Documents/systemc/jenkins' // Directory to move log.txt
-        TEAM_LEAD_EMAIL = 'deepikavandana41@gmail.com' // Replace with actual team lead's email
+        LOG_DIR = '/home/admin1/Documents/systemc/jenkins'
+        TEAM_LEAD_EMAIL = 'deepikavandana41@gmail.com'
     }
 
     triggers {
@@ -22,30 +21,45 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Sanity Check - HelloWorld') {
             steps {
                 script {
                     sh '''
                         export CPLUS_INCLUDE_PATH=$SYSTEMC_HOME/include:$CPLUS_INCLUDE_PATH
                         export LD_LIBRARY_PATH=$SYSTEMC_HOME/lib:$LD_LIBRARY_PATH
                         mkdir -p ${BUILD_DIR}
+                        g++ -I$SYSTEMC_HOME/include -L$SYSTEMC_HOME/lib -lsystemc helloworld.cpp -o ${BUILD_DIR}/helloworld.exe
+
+                        echo "Running HelloWorld sanity check..."
+                        ./${BUILD_DIR}/helloworld.exe
+                    '''
+                }
+            }
+        }
+
+        stage('Build Main File') {
+            steps {
+                script {
+                    sh '''
+                        export CPLUS_INCLUDE_PATH=$SYSTEMC_HOME/include:$CPLUS_INCLUDE_PATH
+                        export LD_LIBRARY_PATH=$SYSTEMC_HOME/lib:$LD_LIBRARY_PATH
                         g++ -I$SYSTEMC_HOME/include -L$SYSTEMC_HOME/lib -lsystemc conv_withtimings.cpp -o ${BUILD_DIR}/vconv.exe
                     '''
                 }
             }
         }
 
-        stage('Run') {
+        stage('Run Main Application') {
             steps {
                 script {
                     sh '''
                         export LD_LIBRARY_PATH=$SYSTEMC_HOME/lib:$LD_LIBRARY_PATH
                         ./${BUILD_DIR}/vconv.exe
 
-                        # Ensure the log directory exists
+                        # Ensure log directory exists
                         mkdir -p $LOG_DIR
 
-                        # Move the log file if it exists
+                        # Move the log.txt if exists
                         if [ -f /home/admin1/Documents/systemc/log.txt ]; then
                             mv /home/admin1/Documents/systemc/log.txt $LOG_DIR/log.txt
                         else
@@ -64,23 +78,20 @@ pipeline {
     post {
         success {
             script {
-                // Get the last commit author
                 def commitAuthor = sh(script: "git log -1 --pretty=format:'%an <%ae>'", returnStdout: true).trim()
-                
-                // Send success email to the author and team lead
                 emailext(
                     subject: "Jenkins Build Succeeded: ${env.JOB_NAME} [#${env.BUILD_NUMBER}]",
                     body: """
-                        Jenkins build has successfully completed.
+                        Jenkins build completed successfully.
 
                         Job: ${env.JOB_NAME}
                         Build: #${env.BUILD_NUMBER}
                         Commit: ${env.GIT_COMMIT}
                         Author: ${commitAuthor}
-                        View logs: ${env.BUILD_URL}console
 
-                        Thanks,
-                        Jenkins Pipeline
+                        View console log: ${env.BUILD_URL}console
+
+                        -- Jenkins
                     """,
                     to: "${commitAuthor}, ${TEAM_LEAD_EMAIL}"
                 )
@@ -97,6 +108,8 @@ pipeline {
                     Build: #${env.BUILD_NUMBER}
                     Commit: ${env.GIT_COMMIT}
                     View logs: ${env.BUILD_URL}console
+
+                    -- Jenkins
                 """,
                 recipientProviders: [[$class: 'DevelopersRecipientProvider']]
             )
