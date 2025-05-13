@@ -10,7 +10,7 @@ SC_MODULE(HelloSystemC) {
     }
 };
 
-//int sc_main(int argc, char* argv[]) {
+int sc_main(int argc, char* argv[]) {
     HelloSystemC hello("HELLO");
     sc_start();
     return 0;
