@@ -14,7 +14,7 @@ pipeline {
         githubPush()
     }
 
-    stages {
+    tages {
         stage('Checkout') {
             steps {
                 git branch: "${BRANCH}", url: "${GIT_REPO_URL}"
