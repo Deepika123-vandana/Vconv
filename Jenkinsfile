@@ -99,58 +99,48 @@ pipeline {
         }
 
         failure {
-            emailext(
-                subject: "Jenkins Build Failed: ${env.JOB_NAME} [#${env.BUILD_NUMBER}]",
-                body: """
-                    Jenkins build failed.
+            script {
+                emailext(
+                    subject: "Jenkins Build Failed: ${env.JOB_NAME} [#${env.BUILD_NUMBER}]",
+                    body: """
+                        Jenkins build failed.
 
-                    Job: ${env.JOB_NAME}
-                    Build: #${env.BUILD_NUMBER}
-                    Commit: ${env.GIT_COMMIT}
-                    View logs: ${env.BUILD_URL}console
+                        Job: ${env.JOB_NAME}
+                        Build: #${env.BUILD_NUMBER}
+                        Commit: ${env.GIT_COMMIT}
 
-                    -- Jenkins
-                """,
-                recipientProviders: [[$class: 'DevelopersRecipientProvider']]
-            )
-            if (currentBuild.result == 'FAILURE' && env.BRANCH_NAME == 'main') {
-                echo "Build failed on main branch. Starting revert process..."
+                        View logs: ${env.BUILD_URL}console
 
-                withCredentials([string(credentialsId: 'github-pat-token', variable: 'GITHUB_TOKEN')]) {
-                    sh '''
-                        set -e
-                        git config user.name "Deepika123-vandana"
-                        git config user.email "deepika.vandana@vconnectech.in"
+                        -- Jenkins
+                    """,
+                    to: "${TEAM_LEAD_EMAIL}"
+                )
 
-                        echo "Last commit:"
-                        git log -1
+                if (env.BRANCH == 'main') {
+                    echo "Build failed on main branch. Starting revert process..."
 
-                        echo "Checking out main branch..."
-                        git checkout main
+                    withCredentials([string(credentialsId: 'github-pat-token', variable: 'GITHUB_TOKEN')]) {
+                        sh """
+                            set -e
+                            git config user.name "Deepika123-vandana"
+                            git config user.email "deepika.vandana@vconnectech.in"
 
-                        echo "Cleaning up possible rebase conflicts..."
-                        rm -rf .git/rebase-merge .git/rebase-apply
+                            git checkout main
 
-                        echo "Fetching latest main from remote..."
-                        git fetch https://github.com/Deepika123-vandana/max_78002-new.git main
+                            # Fetch latest changes and reset hard to remote main to avoid conflicts
+                            git fetch origin main
+                            git reset --hard origin/main
 
-                        echo "Trying to rebase FETCH_HEAD..."
-                        if ! git rebase FETCH_HEAD; then
-                            echo "Rebase failed. Aborting..."
-                            git rebase --abort
-                            echo "Resetting to FETCH_HEAD..."
-                            git reset --hard FETCH_HEAD
-                        fi
+                            # Revert last commit (the one that caused failure)
+                            git revert --no-edit HEAD
 
-                        echo "Reverting last commit..."
-                        git revert --no-edit HEAD
-
-                        echo "Pushing revert to remote..."
-                        git push https://github.com/Deepika123-vandana/max_78002-new.git main
-                    '''
+                            # Push revert commit back to remote (use https with token for auth)
+                            git push https://${GITHUB_TOKEN}@github.com/Deepika123-vandana/Vconv.git main
+                        """
+                    }
+                } else {
+                    echo "No revert needed. Build failed on branch: ${env.BRANCH}"
                 }
-            } else {
-                echo "No revert needed. Build status: ${currentBuild.result}, Branch: ${env.BRANCH_NAME}"
             }
         }
     }
