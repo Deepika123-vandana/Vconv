@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <sstream>
 #include <cstring>
-using namespace sc_core;
+// using namespace sc_core;
 
 template <int conv_lsize, int conv_ksize, int conv_stride, int conv_pad>
 SC_MODULE(MAIN_DESIGN) {
