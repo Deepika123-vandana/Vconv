@@ -1,6 +1,6 @@
-//#include "systemc.h"
-//#include <fstream>
-//#include <string>
+#include "systemc.h"
+#include <fstream>
+#include <string>
 #include <iostream>
 #include <vector>
 #include <iomanip>
